@@ -1,16 +1,14 @@
-import { Directive, ElementRef, HostListener, OnInit } from '@angular/core';
+import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 import { NgControl } from '@angular/forms';
-import { COUNTRY_ARRAY } from '../enum/country';
+import { COUNTRY_ARRAY } from '../common/enum/country';
 
 @Directive({
   selector: '[appCountryAutocomplete]',
   standalone: true,
 })
-export class CountryAutocompleteDirective implements OnInit {
-  constructor(private el: ElementRef, private control: NgControl) {
-  }
-  ngOnInit() {
-  }
+export class CountryAutocompleteDirective {
+  el = inject(ElementRef);
+  control = inject(NgControl);
   @HostListener('blur', ['$event.target.value'])
   onBlur(value: string) {
     const validCountry = COUNTRY_ARRAY.includes(value) ? value : '';

@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, Input, Renderer2 } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, inject, Input, Renderer2 } from '@angular/core';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 @Directive({
@@ -7,10 +7,10 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
   providers: [NgbTooltip]
 })
 export class TooltipDirective implements AfterViewInit {
+  el = inject(ElementRef);
+  renderer = inject(Renderer2);
+  ngbTooltip = inject(NgbTooltip);
   @Input('appTooltip') tooltipTitle: string = '';
-
-  constructor(private el: ElementRef, private renderer: Renderer2, private ngbTooltip: NgbTooltip) {}
-
   ngAfterViewInit() {
     this.ngbTooltip.ngbTooltip = this.tooltipTitle;
     this.ngbTooltip.container = 'body';

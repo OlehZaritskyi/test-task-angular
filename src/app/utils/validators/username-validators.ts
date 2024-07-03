@@ -1,7 +1,7 @@
 import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { Observable, of, take } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
-import { ApiService } from '../service/api.service';
+import { ApiService } from '../../services/api.service';
 
 export class UsernameValidators {
   static createValidator(apiService: ApiService): AsyncValidatorFn {

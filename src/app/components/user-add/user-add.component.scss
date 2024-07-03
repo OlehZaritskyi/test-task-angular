@@ -1,6 +1,6 @@
 .card {
   border: 1px solid #ccc;
-  flex: 0 0 23%;
+  flex: 1 0 25%;
 }
 .card-body {
   padding: 1.25rem;
@@ -18,10 +18,6 @@
   position: relative;
 }
 
-.timer {
-  margin-left: 15px;
-}
-
 .btn-def {
   position: absolute;
   width: 100%;
@@ -29,12 +25,6 @@
   background: rgb(178, 173, 251);
   background: linear-gradient(90deg, rgba(178, 173, 251, 1) 0%, rgba(163, 238, 255, 0.9948354341736695) 100%);
   border: none;
-}
-
-@media screen and (min-width: 768px) and (max-width: 1279px) {
-  .card {
-    flex: 23%;
-  }
 }
 
 @media screen and (max-width: 767px) {

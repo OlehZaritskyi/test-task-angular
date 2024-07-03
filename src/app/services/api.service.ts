@@ -1,14 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IFormsArray, IResponse } from '../interfaces/main.inreface';
+import { IFormsArray, IResponse } from '../common/interfaces';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ApiService {
-
-  constructor(private http: HttpClient) {}
+  http = inject(HttpClient);
 
   checkUsername(username: string): Observable<{ isAvailable: boolean }> {
     return this.http.post<{ isAvailable: boolean }>('/api/checkUsername', { username });

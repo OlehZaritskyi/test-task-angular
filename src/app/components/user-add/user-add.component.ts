@@ -2,30 +2,32 @@ import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core'
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgbDatepickerModule, NgbDateStruct, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
-import { CountryAutocompleteDirective } from '../../shared/directives/country-autocomplete.directive';
+import { CountryAutocompleteDirective } from '../../directives/country-autocomplete.directive';
 import { interval, Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { COUNTRY_ARRAY } from '../../shared/enum/country';
-import { ApiService } from '../../shared/service/api.service';
-import { UsernameValidators } from '../../shared/validators/username-validators';
-import { InputValidatorDirective } from '../../shared/directives/input-validator.directive';
-import { IFormsArray } from '../../shared/interfaces/main.inreface';
-import { TooltipDirective } from '../../shared/directives/tooltip.directive';
+import { COUNTRY_ARRAY } from '../../common/enum/country';
+import { ApiService } from '../../services/api.service';
+import { UsernameValidators } from '../../utils/validators/username-validators';
+import { InputValidatorDirective } from '../../directives/input-validator.directive';
+import { IFormsArray } from '../../common/interfaces';
+import { TooltipDirective } from '../../directives/tooltip.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { textError, timerDefault } from '../../shared/const/const';
+import { textError, timerDefault } from '../../common/constants/const';
 
-// const timerDefault = 15; // Start from 15 seconds
 
 @Component({
-  selector: 'app-form-array',
+  selector: 'app-user-add',
   standalone: true,
   imports: [ReactiveFormsModule, BrowserModule, NgbDatepickerModule, CountryAutocompleteDirective, NgbTypeaheadModule, InputValidatorDirective, TooltipDirective],
-  templateUrl: './form-array.component.html',
-  styleUrl: './form-array.component.scss',
+  templateUrl: './user-add.component.html',
+  styleUrl: './user-add.component.scss',
+  providers: [ApiService]
 })
-export class FormArrayComponent implements OnInit, OnDestroy {
+export class UserAddComponent implements OnInit, OnDestroy {
+  fb = inject(FormBuilder);
+  apiService = inject(ApiService);
   destroyRef = inject(DestroyRef);
-  public form: FormGroup;
+  public form!: FormGroup;
   public minDate: NgbDateStruct = { year: 1925, month: 1, day: 1 };
   public maxDate: NgbDateStruct = {
     year: new Date().getFullYear(),
@@ -41,14 +43,8 @@ export class FormArrayComponent implements OnInit, OnDestroy {
     return this.form.get('formsArray') as FormArray;
   }
 
-  constructor(private fb: FormBuilder, private apiService: ApiService) {
-    this.form = this.fb.group({
-      formsArray: this.fb.array([])
-    });
-  }
-
   ngOnInit(): void {
-    this.formInitialization();
+    this.initForm();
   }
 
   ngOnDestroy() {
@@ -100,7 +96,7 @@ export class FormArrayComponent implements OnInit, OnDestroy {
 
   public formatter = (inputValue: string) => inputValue;
 
-  public formInitialization(): void {
+  public addFormArrayItem(): void {
     const formGroup = this.fb.group({
       country: ['', Validators.required],
       name: ['', Validators.required, UsernameValidators.createValidator(this.apiService)],
@@ -109,11 +105,11 @@ export class FormArrayComponent implements OnInit, OnDestroy {
     this.formsArray.push(formGroup);
   }
 
-  private submitForms() {
+  private submitForms(): void {
     const formsData: IFormsArray[] = this.formsArray.getRawValue();
     this.apiService.submitForm(formsData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe( () => {
       this.formsArray.clear();
-      this.formInitialization();
+      this.addFormArrayItem();
       this.isSubmitting = false;
       this.timer = timerDefault;
 
@@ -121,9 +117,19 @@ export class FormArrayComponent implements OnInit, OnDestroy {
     });
   }
 
-  private markAllFieldsAsTouched() {
+  private markAllFieldsAsTouched(): void {
     this.formsArray.controls.forEach((formGroup) => {
       formGroup.markAllAsTouched();
+    });
+  }
+
+  private initForm(): void {
+    this.form = this.fb.group({
+      formsArray: this.fb.array([this.fb.group({
+        country: ['', Validators.required],
+        name: ['', Validators.required, UsernameValidators.createValidator(this.apiService)],
+        birthDate: ['', Validators.required]
+      })])
     });
   }
 

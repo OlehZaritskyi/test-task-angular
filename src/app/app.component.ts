@@ -2,9 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  template: '<app-user-add></app-user-add>'
 })
 export class AppComponent {
-  title = 'test-task-angular';
 }

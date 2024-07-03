@@ -1,0 +1,131 @@
+<div class="container mt-5">
+  @if(!isSubmitting) {
+  <button class="btn btn-success mb-3" (click)="onSubmit()">Submit all forms</button>
+  } @else if (isSubmitting) {
+
+     <button class="btn btn-danger mb-2" (click)="onCancel()">Cancel</button>
+     <span class="timer mx-4">{{ timer }} seconds</span>
+
+  }
+  @if(errorMessage) {
+  <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+  }
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="row" formArrayName="formsArray">
+      <div class="col-12 d-flex flex-wrap">
+        <div *ngFor="let formGroup of formsArray.controls; let i = index" [formGroupName]="i" class="card mb-3 me-3">
+          <div class="card-body">
+            <div class="form-group mb-1">
+              <label for="country-{{i}}" class="title-label mb-1">
+                Country
+                <span class="tooltip-icon"
+                      appTooltip="Start entering the country and select from the suggested list">
+                  <img src="assets/icons/circle.svg" alt=""/>
+                </span>
+              </label>
+
+              <input
+                id="country-{{i}}"
+                class="form-control"
+                formControlName="country"
+                appCountryAutocomplete
+                placeholder="Enter the country"
+                [ngbTypeahead]="search"
+                [inputFormatter]="formatter"
+                [resultFormatter]="formatter"
+                [class.is-invalid]="formGroup.get('country')?.invalid && formGroup.get('country')?.touched"
+              />
+              <ng-template
+                [appInputValidator]="{ $implicit: 'Please enter the correct Country', control: formGroup.get('country') }"
+              >
+                <div class="text-danger">Please enter the correct Country</div>
+              </ng-template>
+              @if(formGroup.get('country')?.invalid && formGroup.get('country')?.touched) {
+              <div class="text-danger">The field is mandatory</div>}
+            </div>
+            <div class="form-group mb-1">
+              <label for="name-{{i}}" class="title-label mb-1">
+                Name
+                <span class="tooltip-icon" appTooltip="Enter a name that is free">
+                  <img src="assets/icons/circle.svg" alt=""/>
+                </span>
+              </label>
+              <input type="text"
+                     id="name-{{i}}"
+                     class="form-control"
+                     formControlName="name"
+                     placeholder="Enter the name"
+                     [class.is-invalid]="formGroup.get('name')?.invalid && formGroup.get('name')?.touched"
+              >
+              <ng-template
+                [appInputValidator]="{ $implicit: 'Username is taken', control: formGroup.get('name') }"
+              >
+                <div class="text-danger">Username is taken</div>
+              </ng-template>
+              @if(formGroup.get('name')?.invalid && formGroup.get('name')?.touched) {
+              <div class="text-danger">The field is mandatory</div>}
+
+              @if(!formGroup.get('name')?.hasError('usernameTaken') && formGroup.get('name')?.valid) {
+              <small class="text-success" >
+                Username is free
+              </small>
+              }
+
+
+            </div>
+            <div class="form-group mb-1">
+              <label for="birthDate-{{i}}" class="title-label mb-1">
+                Date of birth
+                <span class="tooltip-icon" appTooltip="Select your date of birth in the calendar">
+                  <img src="assets/icons/circle.svg" alt=""/>
+                </span>
+              </label>
+              <div class="input-group">
+                <input
+                  id="birthDate-{{i}}"
+                  class="form-control"
+                  placeholder="dd.mm.yyyy"
+                  name="dp"
+                  formControlName="birthDate"
+                  ngbDatepicker
+                  #d="ngbDatepicker"
+                  [readonly]="true"
+                  [minDate]="minDate"
+                  [maxDate]="maxDate"
+                  [class.is-invalid]="formGroup.get('birthDate')?.invalid && formGroup.get('birthDate')?.touched"
+                />
+
+                <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button" [disabled]="isSubmitting">
+                  <img src="assets/icons/calendar.svg" alt=""/>
+                </button>
+
+              </div>
+              <ng-template
+                [appInputValidator]="{ $implicit: 'Please enter the correct Date of Birth', control: formGroup.get('birthDate') }"
+              >
+                <div class="text-danger">Please enter the correct Date of Birth</div>
+              </ng-template>
+              @if(formGroup.get('birthDate')?.invalid && formGroup.get('birthDate')?.touched) {
+              <div class="text-danger">The field is mandatory</div>}
+            </div>
+            @if (formsArray.length > 1) {
+            <button type="button" class="btn btn-danger mt-3" (click)="removeForm(i)" [disabled]="isSubmitting">Delete the form</button>
+            }
+          </div>
+        </div>
+        @if (formsArray.length < 10) {
+        <div class="card mb-3 me-3" >
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <button type="button" class="btn btn-def" (click)="addFormArrayItem()" [disabled]="isSubmitting">
+              <img src="assets/icons/circle-dotted.svg" />
+            </button>
+          </div>
+        </div>
+        }
+
+
+      </div>
+    </div>
+  </form>
+</div>
+
